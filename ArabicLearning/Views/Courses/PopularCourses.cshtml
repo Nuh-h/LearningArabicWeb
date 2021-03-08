@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Popular Courses";
+}
+@model IEnumerable<ArabicLearning.Repositories.Models.Course>
+
+<h2 class="align-self-center text-primary">Popular Courses</h2>
+
+<div class="table table-active table-responsive" style="background-image:url('https://picsum.photos/200');
+        background-position:center;height:150px;">
+    @foreach(var course in Model)
+    {
+        <div class="d-table-row border-top" style="width:100%;height: 70px; display: flex; justify-content: center;
+        align-items: center; flex-direction: row; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: ghostwhite;">
+            <div class="d-table-cell" style="width:20%; background-image:url('https://picusm.photos/100');">.</div>
+            <div class="d-table-cell m-4"
+                 style="width:80%;display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                <h4>@course.Name</h4>
+                <p class="font-italic p-4"> by @course.Teacher</p>
+                <a class="border-success bg-dark text-center" style="border-radius:15px; padding:7px;" href="Courses/@course.Type"> #@course.Level </a>
+            </div>
+        </div>
+    }
+    
+</div>
+

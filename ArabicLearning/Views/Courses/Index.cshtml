@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "Courses";
+}
+@model IEnumerable<ArabicLearning.Repositories.Models.Course>
+
+<h2 class="justify-center"> Arabic Learning Courses </h2>
+<p class="justify-center text-wrap"> This will be the place for the courses to be displayed in the following order.</p>
+
+<div class="card">
+    <a class="card-title" href="Courses/Popular" style="display: flex; justify-content:space-between;cursor:pointer;">
+        <h3>Popular Courses</h3>
+        <span style="float:right;padding-right:10px;color:cornflowerblue;font-size:30px;">></span>
+    </a>
+    <p class="card-body">
+        There will be SlideShow here
+        @foreach (var c in Model)
+        {
+            <div class="card-group">
+                <div class="card"><a class="nav-link" href="Courses/@c.Id/Detail">@c.Name</a></div>
+                <div class="card text-center">@c.Teacher</div>
+                <div class="card text-center">@c.Type</div>
+                <div class="card text-center">@c.Level</div>
+            </div>
+        }
+    </p>
+</div>
+<br />
+<div class="card">
+    <a class="card-title table-hover" href="Courses/New" style="display:flex; justify-content:space-between;cursor:pointer;">
+        <h3>New Courses </h3>
+        <span style="float:right;padding-right:10px;color:cornflowerblue;font-size:30px;">></span>
+    </a>
+    @*<p>SlideShow</p>*@
+    <div class="carousel slide" data-ride="carousel" id="courseSlider">
+
+        <div class="carousel-inner">
+            @for(var c = 0; c < Model.Count(); c++)
+            {
+                var val = c == 0 ? " active" : "";
+                var course = Model.ElementAt(c);
+
+                <div class="@(val) card carousel-item" style="background-image:url('https://picsum.photos/600/400')"}>
+                    <div class="card-title bg-white"> <div class="text-primary "> @course.Name </div></div>
+                    <div class="card-group card-body flex-row justify-center w-75 offset-1">
+                        <div class=" card m-2 p-2">@course.Type</div>
+                        <div class="card m-2 p-2">by @course.Teacher</div>
+                        @*<div class="card">@course.Level</div>*@
+                    </div>
+                </div>
+            }
+        </div>
+        <a class="carousel-control-prev" href="#courseSlider" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon box-shadow" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#courseSlider" role="button" data-slide="next">
+            <span class="carousel-control-next-icon box-shadow" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+
