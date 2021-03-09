@@ -57,13 +57,8 @@ namespace ArabicLearning.Controllers
         private User AuthenticateUser(User login)
         {
             User user = null;
-
-            //Validate the User Credentials    
-            //Demo Purpose, I have Passed HardCoded User Information    
-            if (login.Name == "Na")
-            {
-                user = new User { Name = "Na Travel", Email = "n.test@coldmail.com" };
-            }
+            //To Be Implemented
+    
             return user;
         }
     }

@@ -19,38 +19,38 @@ namespace ArabicLearning.Repositories
             myConn = new SqlConnection("Server=LAPTOP-WELHVMIL;Database=LearningArabicDB;Trusted_Connection=True;");
 
             //used this command to create database
-            //str = "CREATE DATABASE LearningArabicDB;";
+            //queryStr = "CREATE DATABASE LearningArabicDB;";
 
             //now, will use this command to create the table for courses
-            //str = "CREATE TABLE Courses( course_id INT NOT NULL IDENTITY PRIMARY KEY, course_name VARCHAR(30), ... )";
+            //queryStr = "CREATE TABLE Courses( course_id INT NOT NULL IDENTITY PRIMARY KEY, course_name VARCHAR(30), ... )";
 
             //we will now use this command to add in the initial values
-            //queryStr = "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 2', 'Elementary', 'Aq', 'Syntax');" +
-            //    "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 3', 'Lower Intermediate', 'Aq', 'Morphology');" +
-            //    "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 4', 'Upper Intermediate', 'Aq', 'Rhetoric');" +
-            //    "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 5', 'Advanced', 'Aq', 'Tarqeeq')";
+/*            queryStr = "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 2', 'Elementary', 'Aq', 'Syntax');" +
+                "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 3', 'Lower Intermediate', 'Aq', 'Morphology');" +
+                "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 4', 'Upper Intermediate', 'Aq', 'Rhetoric');" +
+                "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 5', 'Advanced', 'Aq', 'Tarqeeq')";*/
 
-            //queryStr = "";
-            //using (SqlCommand myCommand = new SqlCommand(queryStr, myConn))
-            //{
-            //    try
-            //    {
-            //        myConn.Open();
-            //        myCommand.ExecuteNonQuery();
-            //        System.Diagnostics.Debug.WriteLine("DataBase connection is ok");
-            //    }
-            //    catch (System.Exception ex)
-            //    {
-            //        System.Diagnostics.Debug.WriteLine(ex.ToString());
-            //    }
-            //    finally
-            //    {
-            //        if (myConn.State == ConnectionState.Open)
-            //        {
-            //            myConn.Close();
-            //        }
-            //    }
-            //}
+            /* queryStr = "";
+             using (SqlCommand myCommand = new SqlCommand(queryStr, myConn))
+             {
+                 try
+                 {
+                     myConn.Open();
+                     myCommand.ExecuteNonQuery();
+                     System.Diagnostics.Debug.WriteLine("DataBase connection is ok");
+                 }
+                 catch (System.Exception ex)
+                 {
+                     System.Diagnostics.Debug.WriteLine(ex.ToString());
+                 }
+                 finally
+                 {
+                     if (myConn.State == ConnectionState.Open)
+                     {
+                         myConn.Close();
+                     }
+                 }
+             }*/
         }
 
         public IEnumerable<Course> GetAllCourses()
