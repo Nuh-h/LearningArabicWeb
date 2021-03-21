@@ -6,11 +6,14 @@ using ArabicLearning.Repositories;
 using ArabicLearning.Repositories.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Text;
+
+using Westwind.AspNetCore.LiveReload;
 
 namespace ArabicLearning
 {
@@ -26,6 +29,9 @@ namespace ArabicLearning
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificate();
+            services.AddLiveReload();
+
             services.AddControllersWithViews();
             services.AddScoped<IImagesRepository, ImagesRepository>();
             services.AddScoped<ICoursesRepository, CoursesRepository>();
@@ -36,7 +42,10 @@ namespace ArabicLearning
         {
             if (env.IsDevelopment())
             {
+                app.UseAuthentication();
+                app.UseLiveReload();
                 app.UseDeveloperExceptionPage();
+                
             }
             else
             {

@@ -7,16 +7,16 @@
 <p class="justify-center text-wrap"> This will be the place for the courses to be displayed in the following order.</p>
 
 <div class="card">
-    <a class="card-title" href="Courses/Popular" style="display: flex; justify-content:space-between;cursor:pointer;">
+    <a class="card-title" href="/Courses/Popular" style="display: flex; justify-content:space-between;cursor:pointer;">
         <h3>Popular Courses</h3>
         <span style="float:right;padding-right:10px;color:cornflowerblue;font-size:30px;">></span>
     </a>
     <p class="card-body">
-        There will be SlideShow here
+        @* There will be SlideShow here.... *@
         @foreach (var c in Model)
         {
             <div class="card-group">
-                <div class="card"><a class="nav-link" href="Courses/@c.Id/Detail">@c.Name</a></div>
+                <div class="card"><a class="nav-link" href="/Courses/@c.Id/Detail">@c.Name</a></div>
                 <div class="card text-center">@c.Teacher</div>
                 <div class="card text-center">@c.Type</div>
                 <div class="card text-center">@c.Level</div>
@@ -26,7 +26,7 @@
 </div>
 <br />
 <div class="card">
-    <a class="card-title table-hover" href="Courses/New" style="display:flex; justify-content:space-between;cursor:pointer;">
+    <a class="card-title table-hover" href="/Courses/New" style="display:flex; justify-content:space-between;cursor:pointer;">
         <h3>New Courses </h3>
         <span style="float:right;padding-right:10px;color:cornflowerblue;font-size:30px;">></span>
     </a>
