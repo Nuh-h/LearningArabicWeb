@@ -22,6 +22,7 @@ namespace ArabicLearning.Controllers
             image = new Image();
             if (id == null)
             {
+                image = imrepo.GetImage(0);
                 return View(image);
             }
             
