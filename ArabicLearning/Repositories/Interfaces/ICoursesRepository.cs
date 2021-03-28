@@ -9,8 +9,7 @@ namespace ArabicLearning.Repositories.Interfaces
     public interface ICoursesRepository
     {
         IEnumerable<Course> GetAllCourses();
-        IEnumerable<Course> GetAllGrammar();
-        IEnumerable<Course> GetAllMorphology();
+        IEnumerable<Course> GetType(string courseType);
         IEnumerable<Course> GetLevel(string level);
         IEnumerable<Course> GetAllPopular();
         IEnumerable<Course> GetAllNew();

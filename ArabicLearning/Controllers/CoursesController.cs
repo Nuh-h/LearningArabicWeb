@@ -22,13 +22,32 @@ namespace ArabicLearning.Controllers
         [HttpGet("Courses/New")]
         public IActionResult NewCourses()
         {
-            return View(coursesRepo.GetAllNew());
+            ViewData["Title"] = "New Courses";
+            return View("~/Views/Courses/CategoriesTemplate.cshtml", coursesRepo.GetAllNew());
         }
+
         [HttpGet("Courses/Popular")]
         public IActionResult PopularCourses()
         {
-            return View(coursesRepo.GetAllPopular());
+            ViewData["Title"] = "Popular Courses";
+            return View("~/Views/Courses/CategoriesTemplate.cshtml", coursesRepo.GetAllPopular());
         }
+
+
+        [HttpGet("Courses/{type} Type")]
+        public IActionResult CoursesOfType(string type)
+        {
+            ViewData["Title"] = type+" Courses";
+            return View("~/Views/Courses/CategoriesTemplate.cshtml", coursesRepo.GetType(type));
+        }
+
+        [HttpGet("Courses/{level} Level")]
+        public IActionResult CoursesOfLevel(string level)
+        {
+            ViewData["Title"] = level+" Courses";
+            return View("~/Views/Courses/CategoriesTemplate.cshtml", coursesRepo.GetLevel(level));
+        }
+
         [HttpGet("Courses/{id}/Detail")]
         public IActionResult CourseDetails(int id)
         {

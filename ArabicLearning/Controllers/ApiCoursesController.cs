@@ -15,23 +15,16 @@ namespace ArabicLearning.Controllers
         {
             this.coursesRepo = coursesRepository;
         }
-        [HttpGet("api/courses/all")]
         [HttpGet("api/courses")]
         public IActionResult GetAll()
         {
             return new OkObjectResult(coursesRepo.GetAllCourses());
         }
 
-        [HttpGet("api/courses/grammar")]
-        public IActionResult GetGrammar()
+        [HttpGet("api/courses/{type}")]
+        public IActionResult GetType(string type)
         {
-            return new OkObjectResult(coursesRepo.GetAllGrammar());
-        }
-
-        [HttpGet("api/courses/morphology")]
-        public IActionResult GetMorphology()
-        {
-            return new OkObjectResult(coursesRepo.GetAllMorphology());
+            return new OkObjectResult(coursesRepo.GetType(type));
         }
 
         [HttpGet("api/courses/{level}")]

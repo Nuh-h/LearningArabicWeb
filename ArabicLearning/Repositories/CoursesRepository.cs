@@ -10,32 +10,32 @@ namespace ArabicLearning.Repositories
     public class CoursesRepository : ICoursesRepository
     {   
         private String queryStr;
-        private SqlConnection myConn;
+        private SqlConnection myConnection;
         private IEnumerable<Course> Collection;
         public CoursesRepository()
         {
-            this.Collection = InMemoryCourseCollection;
+            //this.Collection = InMemoryCourseCollection;
             
-            myConn = new SqlConnection("Server=LAPTOP-WELHVMIL;Database=LearningArabicDB;Trusted_Connection=True;");
+            myConnection = new SqlConnection("Server=LAPTOP-WELHVMIL;Database=LearningArabicDB;Trusted_Connection=True;");
 
-            //used this command to create database
+            //-- for creating database
             //queryStr = "CREATE DATABASE LearningArabicDB;";
 
-            //now, will use this command to create the table for courses
+            //-- for creating the table for courses
             //queryStr = "CREATE TABLE Courses( course_id INT NOT NULL IDENTITY PRIMARY KEY, course_name VARCHAR(30), ... )";
 
-            //we will now use this command to add in the initial values
-/*            queryStr = "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 2', 'Elementary', 'Aq', 'Syntax');" +
+            //-- to populate some initial items into the table
+            /*queryStr = "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 2', 'Elementary', 'Aq', 'Syntax');" +
                 "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 3', 'Lower Intermediate', 'Aq', 'Morphology');" +
                 "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 4', 'Upper Intermediate', 'Aq', 'Rhetoric');" +
-                "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 5', 'Advanced', 'Aq', 'Tarqeeq')";*/
+                "INSERT INTO Courses(course_name, course_level, course_teacher, course_type) VALUES('Classic Arabic 5', 'Advanced', 'Aq', 'Poetry')";*/
 
             /* queryStr = "";
-             using (SqlCommand myCommand = new SqlCommand(queryStr, myConn))
+             using (SqlCommand myCommand = new SqlCommand(queryStr, myConnection))
              {
                  try
                  {
-                     myConn.Open();
+                     myConnection.Open();
                      myCommand.ExecuteNonQuery();
                      System.Diagnostics.Debug.WriteLine("DataBase connection is ok");
                  }
@@ -45,9 +45,9 @@ namespace ArabicLearning.Repositories
                  }
                  finally
                  {
-                     if (myConn.State == ConnectionState.Open)
+                     if (myConnection.State == ConnectionState.Open)
                      {
-                         myConn.Close();
+                         myConnection.Close();
                      }
                  }
              }*/
@@ -59,21 +59,16 @@ namespace ArabicLearning.Repositories
             //return this.Collection;
             return GetResultFromDB(queryStr);
         }
-        public IEnumerable<Course> GetAllGrammar()
+        public IEnumerable<Course> GetType(string courseType)
         {
-            queryStr = "SELECT * From Courses WHERE course_type='Grammar';";
-            //return this.Collection.GroupBy(course => course.Type=="Nahw").FirstOrDefault();
+            queryStr = string.Format("SELECT * From Courses WHERE course_type={0}",courseType);
+            //return this.Collection.GroupBy(course => course.Type==courseType).FirstOrDefault();
             return GetResultFromDB(queryStr);
         }
-        public IEnumerable<Course> GetAllMorphology()
-        {
-            queryStr = "SELECT * From Courses WHERE course_type='Morphology';";
-            //return this.Collection.Where(course => course.Type=="Sarf");
-            return GetResultFromDB(queryStr);
-        }
+
         public IEnumerable<Course> GetLevel(string level)
         {
-            queryStr = string.Format("SELECT * From Courses WHERE course_level='{0}'",level);
+            queryStr = string.Format("SELECT * From Courses WHERE course_level={0}",level);
             //return this.Collection.GroupBy(course => course.Level == level).FirstOrDefault();
             return GetResultFromDB(queryStr);
         }
@@ -89,17 +84,17 @@ namespace ArabicLearning.Repositories
         }
         public IEnumerable<Course> GetFullCourse(int id)
         {
-            queryStr = string.Format("SELECT * From Courses WHERE course_id={0};",id);
+            queryStr = string.Format("SELECT * From Courses WHERE course_id={0}",id);
             return GetResultFromDB(queryStr);
         }
         private IEnumerable<Course> GetResultFromDB(string queryStr)
         {
             List<Course> resultList = new List<Course>();
-            using (SqlCommand myCommand = new SqlCommand(queryStr, myConn))
+            using (SqlCommand myCommand = new SqlCommand(queryStr, myConnection))
             {
                 try
                 {
-                    myConn.Open();
+                    myConnection.Open();
                     SqlDataReader myData = myCommand.ExecuteReader();
                     if (myData.HasRows)
                     {
@@ -129,9 +124,9 @@ namespace ArabicLearning.Repositories
                 }
                 finally
                 {
-                    if (myConn.State == ConnectionState.Open)
+                    if (myConnection.State == ConnectionState.Open)
                     {
-                        myConn.Close();
+                        myConnection.Close();
                     }
                 }
             }
@@ -139,11 +134,11 @@ namespace ArabicLearning.Repositories
         }
         private IEnumerable<Course> InMemoryCourseCollection { get; } = new List<Course>
         {
-            new Course { Name = "Classical Arabic 1", Level = "Beginner", Teacher = "Aq", Type = "Nahw" },
-            new Course { Name = "Classical Arabic 2", Level = "Elementary", Teacher = "Aq", Type = "Sarf" },
-            new Course { Name = "Classical Arabic 3", Level = "Lower Intermediate", Teacher = "Aq", Type = "Lugha" },
-            new Course { Name = "Classical Arabic 4", Level = "Upper Intermediate", Teacher = "Aq", Type = "Balagha" },
-            new Course { Name = "Classical Arabic 5", Level = "Advanced", Teacher = "Aq", Type = "Tarqeeq" }
+            new Course { Name = "Classical Arabic 1", Level = "Beginner", Teacher = "Aq", Type = "Grammar" },
+            new Course { Name = "Classical Arabic 2", Level = "Elementary", Teacher = "Aq", Type = "Morphology" },
+            new Course { Name = "Classical Arabic 3", Level = "Lower Intermediate", Teacher = "Aq", Type = "Language" },
+            new Course { Name = "Classical Arabic 4", Level = "Upper Intermediate", Teacher = "Aq", Type = "Eloquence" },
+            new Course { Name = "Classical Arabic 5", Level = "Advanced", Teacher = "Aq", Type = "Poetry" }
         };        
     }
 }
