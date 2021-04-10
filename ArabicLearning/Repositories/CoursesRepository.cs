@@ -11,7 +11,7 @@ namespace ArabicLearning.Repositories
     {   
         private String queryStr;
         private SqlConnection myConnection;
-        private IEnumerable<Course> Collection;
+        //private IEnumerable<Course> Collection;
         public CoursesRepository()
         {
             //this.Collection = InMemoryCourseCollection;
@@ -61,14 +61,14 @@ namespace ArabicLearning.Repositories
         }
         public IEnumerable<Course> GetType(string courseType)
         {
-            queryStr = string.Format("SELECT * From Courses WHERE course_type={0}",courseType);
+            queryStr = string.Format("SELECT * From Courses WHERE course_type='{0}'",courseType);
             //return this.Collection.GroupBy(course => course.Type==courseType).FirstOrDefault();
             return GetResultFromDB(queryStr);
         }
 
         public IEnumerable<Course> GetLevel(string level)
         {
-            queryStr = string.Format("SELECT * From Courses WHERE course_level={0}",level);
+            queryStr = string.Format("SELECT * From Courses WHERE course_level='{0}'",level);
             //return this.Collection.GroupBy(course => course.Level == level).FirstOrDefault();
             return GetResultFromDB(queryStr);
         }

@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Sign in";
+}
+@model ArabicLearning.Repositories.Models.User;
+
+<h2 class="align-self-center text-primary">Sign In</h2>
+
+<div class="form-group p-4">
+    <form method="post" asp-controller="auth" asp-action="signin">
+        <div class="form-group row ">
+            <label asp-for="firstName"> First Name</label>
+            <input type="text" asp-for="firstName" class="form-control" required/>
+            <small id="nameHelp" class="form-text text-muted">This will be your display name.</small>
+        </div>
+        <div class="form-group row ">
+            <label asp-for="lastName">Last Name</label>
+            <input type="text" asp-for="lastName" class="form-control" required/>
+        </div>
+        <div class="form-group row">
+            <label asp-for="Email"></label>
+            <input type="email" class="form-control" asp-for="Email" type="email" class="form-control" required/>
+        </div>
+        <div class="form-group row">
+            <label asp-for="Password"></label>
+            <input type="password" class="form-control" asp-for="Password" type="password" class="form-control" required/>
+        </div>
+        <button type="submit" class="btn btn-primary ">
+                    Sign in
+        </button>        
+    </form>
+</div>

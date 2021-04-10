@@ -45,6 +45,7 @@ namespace ArabicLearning.Controllers
         public IActionResult CoursesOfLevel(string level)
         {
             ViewData["Title"] = level+" Courses";
+            System.Diagnostics.Debug.Write(coursesRepo.GetLevel(level));
             return View("~/Views/Courses/CategoriesTemplate.cshtml", coursesRepo.GetLevel(level));
         }
 

@@ -21,13 +21,13 @@ namespace ArabicLearning.Controllers
             return new OkObjectResult(coursesRepo.GetAllCourses());
         }
 
-        [HttpGet("api/courses/{type}")]
+        [HttpGet("api/courses/{type} Type")]
         public IActionResult GetType(string type)
         {
             return new OkObjectResult(coursesRepo.GetType(type));
         }
 
-        [HttpGet("api/courses/{level}")]
+        [HttpGet("api/courses/{level} Level")]
         public IActionResult GetCoursesOfLevel(string level)
         {
             return new OkObjectResult(coursesRepo.GetLevel(level));
