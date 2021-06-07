@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace ArabicLearning.Controllers
 {
@@ -31,7 +33,7 @@ namespace ArabicLearning.Controllers
         {
             return View();
         }
-
+        
         [HttpGet("denied")]
         public IActionResult Denied()
         {
@@ -45,7 +47,7 @@ namespace ArabicLearning.Controllers
             return View();
         }
 
-        [HttpGet("login")]
+        /*[HttpGet("login")]
         public IActionResult Login(string returnUrl)
         {
             ViewData["ReturnUrl"] = string.IsNullOrEmpty(returnUrl) ? returnUrl : "/home";
@@ -63,10 +65,10 @@ namespace ArabicLearning.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim("username", firstName),
-                    new Claim(ClaimTypes.NameIdentifier, firstName)/*,
+                    new Claim(ClaimTypes.NameIdentifier, firstName)*//*,
 
                     //adding admin rights
-                    new Claim(ClaimTypes.Role, "Admin")*/
+                    new Claim(ClaimTypes.Role, "Admin")*//*
                 };
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -85,7 +87,7 @@ namespace ArabicLearning.Controllers
             await HttpContext.SignOutAsync();
             //return Redirect("/");
             return Redirect(@"https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=https://localhost:5001/");
-        }
+        }*/
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

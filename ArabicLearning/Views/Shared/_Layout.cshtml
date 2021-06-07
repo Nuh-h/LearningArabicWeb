@@ -25,10 +25,6 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Secured">Secured</a>
                         </li>
-
-                        @*<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>*@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="Index">Courses</a>
                         </li>
@@ -47,16 +43,16 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item float-right">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Logout">Logout</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item float-right">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
                             </li>
                             <li class="nav-item float-right">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Signup">Sign up</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Register">Sign up</a>
                             </li>
                         }
                     </ul>
@@ -73,6 +69,7 @@
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2021 - ArabicLearning - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <span>   |   </span>
             <a asp-area="" asp-controller="Images" asp-action="Images">Images</a>
         </div>
     </footer>

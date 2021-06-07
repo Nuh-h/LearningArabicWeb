@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ArabicLearning.Repositories.Models
 {
-    public class AppIdentityRole:IdentityRole
+    public class AppIdentityRole: IdentityRole
     {
        
     }

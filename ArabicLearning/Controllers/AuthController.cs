@@ -7,6 +7,10 @@ using ArabicLearning.Repositories.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
+using ArabicLearning.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace ArabicLearning.Controllers
 {
@@ -14,67 +18,131 @@ namespace ArabicLearning.Controllers
     [Route("auth/[Action]")]
     public class AuthController : Controller
     {
-        private HttpClient client = new HttpClient();
+        private readonly UserManager<AppIdentityUser> _userManager;
+        private readonly SignInManager<AppIdentityUser> _signInManager;
+        public AuthController(UserManager<AppIdentityUser> userManager, SignInManager<AppIdentityUser> signInManager)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
 
-        [HttpGet]
-        public IActionResult SignUp()
+        public IActionResult Register()
         {
-            var user = new User();
-            return View("~/Views/Auth/SignUp.cshtml",user);
+            return View();
         }
-        [HttpGet]
-        public IActionResult SignIn()
-        {
-            var user = new User();
-            return View("~/Views/Auth/SignIn.cshtml",user);
-        }
-        
         [HttpPost]
-        public async Task<IActionResult> SignUp([FromForm] User user)
+        public async Task<IActionResult> Register(SignupViewModel model)
         {
-            user.Hashed_Password = Hash.HashPassword(user.Password); 
-            var objAsJson = JsonSerializer.Serialize(user);
+            if (ModelState.IsValid)
+            {
+                var user = new AppIdentityUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email
+                };
 
-            var content = new StringContent(objAsJson, Encoding.UTF8, "application/json");
-            content.Headers.ContentType.CharSet = string.Empty;
-            System.Diagnostics.Debug.WriteLine(content.ReadAsStringAsync().Result.ToString());
-            string result = "";
-            using var httpResponse = await client.PostAsync("https://localhost:5001/api/register", content);
-            //httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
-            try
-            {
-                result = await httpResponse.Content.ReadAsStringAsync();
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Index", "Home");
+                }
+
+                foreach(var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid Registeration Attempt");
+
             }
-            catch // Could be ArgumentNullException or UnsupportedMediaTypeException
-            {
-                result += "HTTP Response was invalid or could not be deserialised. | ";
-            };
-            ViewData["result"] = "REGISTERED: "+ result;
-            return View("~/Views/Auth/Welcome.cshtml", user);
+             
+            return View(model);
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            return View();       
         }
 
         [HttpPost]
-        public async Task<IActionResult> SignIn([FromForm] User user)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(SigninViewModel user)
         {
-            //var content = new StringContent(user.ToString(), Encoding.UTF8, "application/json");
-            // var result = await client.PostAsync("authenticate", content);
-
-            //MAKE SURE TO SOMEHOW HASH THE INCOMING PASSWORD AND THEN CHECK AGAINST SAVED HASH
-            user.Hashed_Password = Hash.HashPassword(user.Password); 
-
-            string result = "";
-            using var httpResponse = await client.GetAsync("https://localhost:5001/api/authenticate/"+user.Email+"/"+user.Hashed_Password);
-            //httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
-            try
+            if (ModelState.IsValid)
             {
-                result = await httpResponse.Content.ReadAsStringAsync();
+                var result = await _signInManager.PasswordSignInAsync(user.Email, user.Password, user.RememberMe, false);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+
             }
-            catch // Could be ArgumentNullException or UnsupportedMediaTypeException
+
+
+            return View(user);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+
+            return RedirectToAction("Login");
+        }
+
+        [AllowAnonymous]
+        public IActionResult GoogleLogin()
+        {
+            string redirectUrl = Url.Action("GoogleResponse", "Auth");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("GoogleOpenID", redirectUrl);
+            return new ChallengeResult("GoogleOpenID", properties);
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+                return RedirectToAction(nameof(Login));
+
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
+            //string[] userInfo = { info.Principal.FindFirst(ClaimTypes.Name).Value, info.Principal.FindFirst(ClaimTypes.Email).Value };
+            if (result.Succeeded) {
+                return RedirectToAction("Secured", "Home");
+            }
+            else
             {
-                result += "HTTP Response was invalid or could not be deserialised. | ";
-            };
-            ViewData["result"] = result;
-            return View("~/Views/Auth/Welcome.cshtml", user);
+                AppIdentityUser user = new AppIdentityUser
+                {
+                    Email = info.Principal.FindFirst(ClaimTypes.Email).Value,
+                    UserName = info.Principal.FindFirst(ClaimTypes.Email).Value
+                };
+
+                //Check for duplicate user/already registered, but non-externally
+                var reg = await _userManager.FindByEmailAsync(user.Email);
+                if (reg != null)
+                {
+                    await _signInManager.SignInAsync(user, false);
+                    return RedirectToAction("Secured", "Home");
+                }
+
+                IdentityResult identResult = await _userManager.CreateAsync(user);
+                if (identResult.Succeeded)
+                {
+                    identResult = await _userManager.AddLoginAsync(user, info);
+                    if (identResult.Succeeded)
+                    {
+                        await _signInManager.SignInAsync(user, false);
+                        return RedirectToAction("Secured","Home");
+                    }
+                }
+                return RedirectToAction("Denied", "Home");
+            }
         }
     }
 }

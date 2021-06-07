@@ -1,13 +1,12 @@
 ﻿@{
     ViewData["Title"] = "Sign in";
 }
-@model ArabicLearning.Repositories.Models.User;
 
 <h2 class="align-self-center text-primary">Sign Up</h2>
 
 <div class="form-group p-4">
     <form method="post" asp-controller="auth" asp-action="signup">
-        <div class="form-group row ">
+       @* <div class="form-group row ">
             <label asp-for="firstName"> First Name</label>
             <input type="text" asp-for="firstName" class="form-control" required/>
             <small id="nameHelp" class="form-text text-muted">This will be your display name.</small>
@@ -23,7 +22,7 @@
         <div class="form-group row">
             <label asp-for="Password"></label>
             <input type="password" class="form-control" asp-for="Password" type="password" class="form-control" required/>
-        </div>
+        </div>*@
         <button type="submit" class="btn btn-primary ">
                     Register
         </button>        

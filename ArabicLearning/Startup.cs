@@ -7,9 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
-
+ 
 using Westwind.AspNetCore.LiveReload;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.Tasks;
@@ -20,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using ArabicLearning.Repositories.Models;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace ArabicLearning
 {
@@ -50,90 +50,84 @@ namespace ArabicLearning
             services.AddIdentity<AppIdentityUser, AppIdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>();
             #endregion
 
-            /* JWT AUTHENTICATION
-            var key = "this is a simple key for test purposes";
-            services.AddAuthentication(x=>{
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x => {
-                x.RequireHttpsMetadata = false; 
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
-            services.AddSingleton<IJwtAuthenticationManager>(new JwtAuthenticationManager(key));
-            */
+            #region Cookie-based Authentication
+            //NOTE: Do multi auth by setting redirect of authorize to /login page, and create multiple actions for each external auth provider
+             // Set standard sign in form and multiple buttons corresponding to each external auth provider
+             // If standard form filled & submitted, default authentication will pick it up. 
+             // If any external button clicked, it will go to external auth page,
+             // in any case, redirect back to RedirectUrl fetched from Authorize request
 
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme) //When only cookie
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = "GoogleOpenID";
+                options.DefaultChallengeScheme = "defaultCookie";//"GoogleOpenID";//
             })
-                .AddCookie(options =>
+            .AddCookie("defaultCookie", options =>
+            {
+                options.LoginPath = "/login";
+                options.AccessDeniedPath = "/denied";
+
+                //events in the cookie authentication pipeline
+                options.Events = new CookieAuthenticationEvents()
                 {
-                    options.LoginPath = "/login";
-                    options.AccessDeniedPath = "/denied";
-
-                    //events in the cookie authentication pipeline
-                    options.Events = new CookieAuthenticationEvents()
+                    OnSigningIn = async context =>
                     {
-                        OnSigningIn = async context =>
+                        //or we can add roles here
+                        var principal = context.Principal;
+                        if (principal.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
                         {
-                            //or we can add roles here
-                            var principal = context.Principal;
-                            if (principal.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
+                            if (principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value == "N03")
                             {
-                                if (principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value == "bob")
-                                {
-                                    var claimsIdentity = principal.Identity as ClaimsIdentity;
-                                    claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
-                                }
-                            }
-                        },
-
-                        OnSignedIn = async context =>
-                        {
-                            await Task.CompletedTask;
-                        },
-
-                        OnValidatePrincipal = async context =>
-                        {
-                            await Task.CompletedTask;
-                        }
-                    };
-                })
-                .AddOpenIdConnect("GoogleOpenID", options =>
-                {
-                    options.ClientId = "699630142795-bck4be55o6rdbnsnnhav021cuvtv1dk4.apps.googleusercontent.com";
-                    options.ClientSecret = "uujoYKMsEkQRCgqP7qCwdbKb";
-                    options.CallbackPath = "/authentication";
-                    options.Authority = "https://accounts.google.com";
-                    options.Events = new OpenIdConnectEvents()
-                    {
-                        OnTokenValidated = async context =>
-                        {
-                            //var nameIdentifier = context.Principal.Claims;
-                            if (context.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value == "113435522445322472462")
-                            {
-                                var claim = new Claim(ClaimTypes.Role, "Admin");
-                                var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
-                                claimsIdentity.AddClaim(claim);
+                                var claimsIdentity = principal.Identity as ClaimsIdentity;
+                                claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
                             }
                         }
-                    };
-                });
+                    },
+
+                    OnSignedIn = async context =>
+                    {
+                        await Task.CompletedTask;
+                    },
+
+                    OnValidatePrincipal = async context =>
+                    {
+                        await Task.CompletedTask;
+                    }
+                };
+            })
+            .AddOpenIdConnect("GoogleOpenID", options =>
+            {
+                options.ClientId = Configuration["Authentication:GoogleOpenID:ClientId"];
+                options.ClientSecret = Configuration["Authentication:GoogleOpenID:ClientSecret"];
+                options.CallbackPath = Configuration["Authentication:GoogleOpenID:CallbackPath"];
+                options.Authority = Configuration["Authentication:GoogleOpenID:Authority"];
+                options.Scope.Add("email");
+                options.Events = new OpenIdConnectEvents()
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        
+                        //var nameIdentifier = context.Principal.Claims;
+                        if (context.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value == "113435522445322472462")
+                        {
+                            //var claim1 = new Claim(ClaimTypes.Email, "N03.hassan@gmail.com");
+                            var claim = new Claim(ClaimTypes.Role, "Admin");
+                            var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
+                            claimsIdentity.AddClaim(claim);
+                        }
+                    }
+                };
+            });
             /*.AddGoogle(options =>
             {
-                options.ClientId = "699630142795-bck4be55o6rdbnsnnhav021cuvtv1dk4.apps.googleusercontent.com";
-                options.ClientSecret = "uujoYKMsEkQRCgqP7qCwdbKb";
-                options.CallbackPath = "/authentication";
+                options.ClientId = Configuration["Authentication:GoogleOpenID:ClientId"];
+                options.ClientSecret = Configuration["Authentication:GoogleOpenID:ClientSecret"];
+                options.CallbackPath = Configuration["Authentication:GoogleOpenID:CallbackPath"];
                 options.AuthorizationEndpoint += "?prompt=consent";
             });*/
+            #endregion
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

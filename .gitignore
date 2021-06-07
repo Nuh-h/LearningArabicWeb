@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /ArabicLearning/Controllers/plans.txt
+/ArabicLearning/appsettings.json
