@@ -4,20 +4,28 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
+//mysql
+using MySql.Data;
+using MySql.Data.MySqlClient;
 
 namespace ArabicLearning.Repositories
 {
     public class CoursesRepository : ICoursesRepository
     {   
         private String queryStr;
-        private SqlConnection myConnection;
+        private MySqlConnection myConnection;
         //private IEnumerable<Course> Collection;
         public CoursesRepository()
         {
             //this.Collection = InMemoryCourseCollection;
-            
-            myConnection = new SqlConnection("Server=LAPTOP-WELHVMIL;Database=LearningArabicDB;Trusted_Connection=True;");
-
+            try{
+                myConnection = new MySqlConnection();
+                myConnection.ConnectionString = "Server=localhost;Database=LearningArabicDB;Uid=root;Port=3306;";
+                myConnection.Open();
+            }
+            catch(MySqlException ex) {
+                Console.WriteLine(ex.Message);
+            }
             //-- for creating database
             //queryStr = "CREATE DATABASE LearningArabicDB;";
 
@@ -55,57 +63,57 @@ namespace ArabicLearning.Repositories
 
         public IEnumerable<Course> GetAllCourses()
         {
-            queryStr = "SELECT * From Courses";
+            queryStr = "SELECT * From Course";
             //return this.Collection;
             return GetResultFromDB(queryStr);
         }
         public IEnumerable<Course> GetType(string courseType)
         {
-            queryStr = string.Format("SELECT * From Courses WHERE course_type='{0}'",courseType);
+            queryStr = string.Format("SELECT * From Course WHERE type='{0}'",courseType);
             //return this.Collection.GroupBy(course => course.Type==courseType).FirstOrDefault();
             return GetResultFromDB(queryStr);
         }
 
         public IEnumerable<Course> GetLevel(string level)
         {
-            queryStr = string.Format("SELECT * From Courses WHERE course_level='{0}'",level);
+            queryStr = string.Format("SELECT * From Course WHERE level='{0}'",level);
             //return this.Collection.GroupBy(course => course.Level == level).FirstOrDefault();
             return GetResultFromDB(queryStr);
         }
         public IEnumerable<Course> GetAllNew()
         {
-            queryStr = "SELECT * From Courses ORDER BY course_createdon DESC;";
+            queryStr = "SELECT * From Course ORDER BY createdon DESC;";
             return GetResultFromDB(queryStr);
         }
         public IEnumerable<Course> GetAllPopular()
         {
-            queryStr = "SELECT * From Courses ORDER BY course_popularity DESC;";
+            queryStr = "SELECT * From Course ORDER BY popularity DESC;";
             return GetResultFromDB(queryStr);
         }
         public IEnumerable<Course> GetFullCourse(int id)
         {
-            queryStr = string.Format("SELECT * From Courses WHERE course_id={0}",id);
+            queryStr = string.Format("SELECT * From Course WHERE course_id={0}",id);
             return GetResultFromDB(queryStr);
         }
         private IEnumerable<Course> GetResultFromDB(string queryStr)
         {
             List<Course> resultList = new List<Course>();
-            using (SqlCommand myCommand = new SqlCommand(queryStr, myConnection))
+            using (MySqlCommand myCommand = new MySqlCommand(queryStr, myConnection))
             {
                 try
                 {
-                    myConnection.Open();
-                    SqlDataReader myData = myCommand.ExecuteReader();
+                    // myConnection.Open();
+                    MySqlDataReader myData = myCommand.ExecuteReader();
                     if (myData.HasRows)
                     {
                         while (myData.Read())
                         {
                             Course course = new Course();
                             course.Id = (int) myData["course_id"];
-                            course.Name = (string) myData["course_name"];
-                            course.Level = (string)myData["course_level"];
-                            course.Teacher = (string)myData["course_teacher"];
-                            course.Type = (string)myData["course_type"];
+                            course.Name = (string) myData["name"];
+                            course.Level = (string)myData["level"];
+                            // course.Teacher = (string)myData["teacher"];
+                            course.Type = (string)myData["type"];
 
                             resultList.Add(course);
                             System.Diagnostics.Debug.WriteLine("-- Database query successful --");

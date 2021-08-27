@@ -17,9 +17,13 @@ using System.Linq;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using ArabicLearning.Repositories.Models;
-using Microsoft.EntityFrameworkCore.SqlServer;
+// using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
+
+//add mysql 
+// using MySQL.Data.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace ArabicLearning
 {
@@ -45,7 +49,8 @@ namespace ArabicLearning
 
             #region EF CORE and IDENTITY
             //connecting EF to Database
-            services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<AppIdentityDbContext>(options => options.UseMySql(connectionString,ServerVersion.AutoDetect(connectionString)));
             //registering identity services
             services.AddIdentity<AppIdentityUser, AppIdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>();
             #endregion
